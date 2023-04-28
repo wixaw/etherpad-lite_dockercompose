@@ -1,0 +1,31 @@
+version: '3.3'
+services:
+  etherpad:
+    image: etherpad/etherpad:latest
+    environment:
+      - TITLE=NomPad
+      - DEFAULT_PAD_TEXT=Le service EtherPad de Nom
+      - ADMIN_PASSWORD=${ETHERPAD_ADMIN_PASSWORD}
+      - ADMIN_USER=admin
+      - DB_TYPE=redis
+      - DB_HOST=redis
+      - DB_PORT=6379
+      - DB_PASS=${DB_PASSWORD}
+      - DB_NAME=0
+      - API_KEY=${ETHERPAD_API_KEY}
+      - SESSION_REQUIRED=false
+    ports:
+      - "9001:9001"
+    depends_on:
+      - redis
+    volumes:
+      - './etherpad_data/settings.json:/opt/etherpad-lite/settings.json'
+      - './etherpad_data/node_modules/:/opt/etherpad-lite/node_modules/'
+  redis:
+      image: redis:5
+      container_name: redis
+      restart: always
+      command: >
+        --requirepass ${DB_PASSWORD}
+      volumes:
+          - './redis_data:/data'
